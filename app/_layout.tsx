@@ -44,11 +44,11 @@ export default function RootLayout() {
             }}
           />
           <Tabs.Screen
-            name="contact"
+            name="community"
             options={{
-              title: 'Contact',
+              title: 'Community',
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name="mail" color={color} size={size} />
+                <Ionicons name="chatbubbles" color={color} size={size} />
               ),
             }}
           />

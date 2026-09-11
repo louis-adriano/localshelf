@@ -85,3 +85,36 @@ export async function fetchBookById(id: string): Promise<Book | null> {
   if (error) throw error;
   return data ? mapRowToBook(data as BookRow) : null;
 }
+
+const COVER_COLOR_PALETTE = ['#6B3A5C', '#2E5C3A', '#8B4A2A', '#2A4A6B', '#3A5C5C'];
+
+function pickRandomCoverColor(): string {
+  return COVER_COLOR_PALETTE[Math.floor(Math.random() * COVER_COLOR_PALETTE.length)];
+}
+
+function generateBookId(): string {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+export async function insertBook(input: {
+  title: string;
+  author: string;
+  price: number;
+  state: AustralianState;
+  description: string;
+  bookstoreName?: string;
+}): Promise<void> {
+  const { error } = await supabase.from('books').insert({
+    id: generateBookId(),
+    title: input.title,
+    author: input.author,
+    price: input.price,
+    state: input.state,
+    description: input.description,
+    bookstore_name: input.bookstoreName?.trim() || 'Independent Seller',
+    cover_color: pickRandomCoverColor(),
+    rating: 0,
+    review_count: 0,
+  });
+  if (error) throw error;
+}

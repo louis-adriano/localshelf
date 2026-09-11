@@ -121,11 +121,12 @@ export default function AboutScreen() {
         </View>
 
         <View style={styles.contactBlurb}>
-          <Text style={styles.contactBlurbTitle}>Get in Touch</Text>
+          <Text style={styles.contactBlurbTitle}>Contact Us</Text>
           <Text style={styles.contactBlurbText}>ABN: 12 345 678 901</Text>
           <Text style={styles.contactBlurbText}>
             123 Brunswick St, Fitzroy VIC 3065
           </Text>
+          <Text style={styles.contactBlurbText}>hello@localshelf.com.au</Text>
         </View>
       </ScrollView>
       <Disclaimer />
