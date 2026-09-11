@@ -22,7 +22,14 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro",
-      "output": "single"
+      "output": "single",
+      "name": "LocalShelf",
+      "shortName": "LocalShelf",
+      "description": "Australian indie books marketplace",
+      "backgroundColor": "#1C3A2B",
+      "themeColor": "#1C3A2B",
+      "display": "standalone",
+      "orientation": "portrait"
     },
     "plugins": [
       "expo-router",
@@ -30,6 +37,19 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8ac53511-29fd-4252-baea-b44623af8acb"
+      }
+    },
+    "owner": "louisadriano",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8ac53511-29fd-4252-baea-b44623af8acb"
     }
   }
 }
