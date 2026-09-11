@@ -76,6 +76,41 @@ export async function fetchNewArrivals(limit: number = 3): Promise<Book[]> {
   return (data as BookRow[]).map(mapRowToBook);
 }
 
+export async function fetchTrendingBooks(limit: number = 4): Promise<Book[]> {
+  const { data, error } = await supabase
+    .from('books')
+    .select(BOOK_COLUMNS)
+    .order('review_count', { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return (data as BookRow[]).map(mapRowToBook);
+}
+
+export async function fetchBooksUnderPrice(
+  maxPrice: number,
+  limit: number = 4,
+): Promise<Book[]> {
+  const { data, error } = await supabase
+    .from('books')
+    .select(BOOK_COLUMNS)
+    .lt('price', maxPrice)
+    .order('price', { ascending: true })
+    .limit(limit);
+  if (error) throw error;
+  return (data as BookRow[]).map(mapRowToBook);
+}
+
+export async function fetchBooksByIds(ids: string[]): Promise<Book[]> {
+  if (ids.length === 0) return [];
+
+  const { data, error } = await supabase.from('books').select(BOOK_COLUMNS).in('id', ids);
+  if (error) throw error;
+
+  const books = (data as BookRow[]).map(mapRowToBook);
+  const byId = new Map(books.map((book) => [book.id, book]));
+  return ids.map((id) => byId.get(id)).filter((book): book is Book => book !== undefined);
+}
+
 export async function fetchBookById(id: string): Promise<Book | null> {
   const { data, error } = await supabase
     .from('books')

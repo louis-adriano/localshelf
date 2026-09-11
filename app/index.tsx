@@ -10,15 +10,56 @@ import {
 } from 'react-native';
 import BookCard from '../components/BookCard';
 import BookListRow from '../components/BookListRow';
+import CartButton from '../components/CartButton';
 import Disclaimer from '../components/Disclaimer';
 import HomeHeader from '../components/HomeHeader';
 import { colors, fonts, radius, spacing } from '../constants/theme';
 import { Book } from '../data/books';
-import { fetchFeaturedBooks, fetchNewArrivals } from '../lib/books';
+import {
+  fetchBooksByIds,
+  fetchBooksUnderPrice,
+  fetchFeaturedBooks,
+  fetchNewArrivals,
+  fetchTrendingBooks,
+} from '../lib/books';
+
+const STAFF_PICK_IDS = ['2', '4', '8'];
+
+function BookScrollSection({
+  title,
+  books,
+  emptyText,
+}: {
+  title: string;
+  books: Book[];
+  emptyText: string;
+}) {
+  return (
+    <>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      {books.length > 0 ? (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.featuredRow}
+        >
+          {books.map((book) => (
+            <BookCard key={book.id} book={book} style={styles.featuredCard} />
+          ))}
+        </ScrollView>
+      ) : (
+        <Text style={styles.emptyText}>{emptyText}</Text>
+      )}
+    </>
+  );
+}
 
 export default function HomeScreen() {
   const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
   const [newArrivals, setNewArrivals] = useState<Book[]>([]);
+  const [trendingBooks, setTrendingBooks] = useState<Book[]>([]);
+  const [staffPicks, setStaffPicks] = useState<Book[]>([]);
+  const [underFifteenBooks, setUnderFifteenBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,11 +68,20 @@ export default function HomeScreen() {
     setLoading(true);
     setError(null);
 
-    Promise.all([fetchFeaturedBooks(3), fetchNewArrivals(3)])
-      .then(([featured, arrivals]) => {
+    Promise.all([
+      fetchFeaturedBooks(3),
+      fetchNewArrivals(3),
+      fetchTrendingBooks(4),
+      fetchBooksByIds(STAFF_PICK_IDS),
+      fetchBooksUnderPrice(15, 4),
+    ])
+      .then(([featured, arrivals, trending, picks, underFifteen]) => {
         if (!cancelled) {
           setFeaturedBooks(featured);
           setNewArrivals(arrivals);
+          setTrendingBooks(trending);
+          setStaffPicks(picks);
+          setUnderFifteenBooks(underFifteen);
         }
       })
       .catch((err) => {
@@ -51,7 +101,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <HomeHeader />
+        <HomeHeader rightAccessory={<CartButton tint={colors.forest} />} />
 
         <View style={styles.hero}>
           <Text style={styles.heroTitle}>
@@ -79,20 +129,26 @@ export default function HomeScreen() {
           <Text style={styles.emptyText}>{error}</Text>
         ) : (
           <>
-            <Text style={styles.sectionTitle}>Featured</Text>
-            {featuredBooks.length > 0 ? (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.featuredRow}
-              >
-                {featuredBooks.map((book) => (
-                  <BookCard key={book.id} book={book} style={styles.featuredCard} />
-                ))}
-              </ScrollView>
-            ) : (
-              <Text style={styles.emptyText}>No featured books yet.</Text>
-            )}
+            <BookScrollSection
+              title="Featured"
+              books={featuredBooks}
+              emptyText="No featured books yet."
+            />
+            <BookScrollSection
+              title="🔥 Trending This Week"
+              books={trendingBooks}
+              emptyText="No trending books yet."
+            />
+            <BookScrollSection
+              title="⭐ Staff Picks"
+              books={staffPicks}
+              emptyText="No staff picks yet."
+            />
+            <BookScrollSection
+              title="💸 Under $15"
+              books={underFifteenBooks}
+              emptyText="No books under $15 yet."
+            />
 
             <Text style={styles.sectionTitle}>New Arrivals</Text>
             {newArrivals.length > 0 ? (

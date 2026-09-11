@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import BookCard from '../components/BookCard';
+import CartButton from '../components/CartButton';
 import Disclaimer from '../components/Disclaimer';
 import Header from '../components/Header';
 import StateFilterChips, { StateFilter } from '../components/StateFilterChips';
@@ -58,6 +59,7 @@ export default function BrowseScreen() {
       <Header
         title="Browse Books"
         subtitle={`${books.length} book${books.length === 1 ? '' : 's'} available`}
+        rightAccessory={<CartButton tint={colors.cream} />}
       />
 
       <View style={styles.searchBar}>
